@@ -29,6 +29,7 @@ UpTodo é um aplicativo de lista de tarefas desenvolvido com React Native, Expo 
 - [x] **Editar os dados do usuário** (nome e senha).
 - [x] **Design responsivo**: adaptado para diversos dispositivos.
 - [ ] **Editar foto de perfil do usuário**
+- [ ] **Filtrar tarefa por um intervalo de tempo**
 - [ ] **Autenticação com Google** para facilitar o login e sincronização de dados.
 
 ## ✅ Como Executar o Projeto
