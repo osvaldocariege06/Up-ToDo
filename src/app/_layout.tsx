@@ -63,7 +63,7 @@ function RootLayoutNav() {
     if (!isLoaded) return
 
     if (!isSignedIn || user === null) {
-      router.replace('/(pages)/auth/login')
+      router.replace('/')
     } else {
       router.replace('/(pages)/(tabs)/')
     }

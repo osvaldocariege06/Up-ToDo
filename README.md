@@ -45,8 +45,14 @@ Antes de começar 🏁, você precisa ter:
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/osvaldocariege06/Up-ToDo
+   git clone https://github.com/osvaldocariege06/Up-ToDo.git
    cd UpTodo
+
+## 📺 Demonstração do App
+
+[![Apresentação do Up-ToDo](https://img.shields.io/badge/YouTube-Video-red?logo=youtube&logoColor=white)](https://youtu.be/tr43iLhS634?si=AdXqknEYBSOfreOC)
+
+Clique no badge para assistir à apresentação do aplicativo no YouTube.
 
 
 ## 📝 Autor
