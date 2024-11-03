@@ -30,6 +30,7 @@ export const useCategoryStore = create<CategoryState>(set => ({
     set({ loading: true })
     try {
       const newCategory = await createCategory(category)
+      console.log('Add Category zus', newCategory)
       set(state => ({
         categories: [...state.categories, newCategory],
       }))

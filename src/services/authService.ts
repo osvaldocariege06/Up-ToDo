@@ -16,7 +16,7 @@ import {
   type User,
   updateProfile,
 } from 'firebase/auth'
-import { useAuth, useUser } from '@clerk/clerk-expo'
+import { collection, getDocs, getFirestore } from 'firebase/firestore'
 
 export type signUpProps = {
   username: string
@@ -82,6 +82,15 @@ export const signIn = async (data: signInProps) => {
   } catch (error) {
     throw new Error(String(error))
   }
+}
+
+export const getImagesFromFirestore = async () => {
+  const db = getFirestore(app)
+  const imagesCollection = collection(db, 'images') // Nome da coleção onde as URLs estão armazenadas
+  const snapshot = await getDocs(imagesCollection)
+  const images = snapshot.docs.map(doc => doc.data())
+
+  return images // Array com os dados das imagens
 }
 
 // export const loginWithGoogle = async () => {

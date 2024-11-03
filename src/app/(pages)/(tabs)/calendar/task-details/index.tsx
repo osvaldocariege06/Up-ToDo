@@ -13,7 +13,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import colors from 'tailwindcss/colors'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import FeatherIcon from '@expo/vector-icons/Feather'
+import FeatherIcon from 'react-native-vector-icons/Feather'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import {
   ChevronLeft,
@@ -47,6 +47,8 @@ export default function TaskDetails() {
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [icon, setIcon] = useState('')
+
   const [isLoading, setIsLoading] = useState(false)
   const [isDateTimeLoading, setIsDateTimeLoading] = useState(false)
   const [isAddCategoryLoading, setIsAddCategoryLoading] = useState(false)
@@ -72,14 +74,13 @@ export default function TaskDetails() {
     }
   }, [])
 
-  const modalHeight = keyboardVisible ? '85%' : '50%'
-
   // ref
   const bottomSheetTitleAndDescriptionModalRef = useRef<BottomSheetModal>(null)
   const bottomSheetDateModalRef = useRef<BottomSheetModal>(null)
   const bottomSheetTimerModalRef = useRef<BottomSheetModal>(null)
   const bottomSheetCategoryModalRef = useRef<BottomSheetModal>(null)
   const bottomSheetCreateCategoryModalRef = useRef<BottomSheetModal>(null)
+  const bottomSheetAddIconCategoryModalRef = useRef<BottomSheetModal>(null)
   const bottomSheetPriorityModalRef = useRef<BottomSheetModal>(null)
   const bottomSheetDeleteModalRef = useRef<BottomSheetModal>(null)
 
@@ -119,6 +120,14 @@ export default function TaskDetails() {
     bottomSheetCreateCategoryModalRef.current?.present()
   }, [])
 
+  const handlePresentAddIconCategoryModalPress = useCallback(() => {
+    bottomSheetAddIconCategoryModalRef.current?.present()
+  }, [])
+
+  const handleCloseAddIconCategoryModalPress = useCallback(() => {
+    bottomSheetAddIconCategoryModalRef.current?.close()
+  }, [])
+
   const handlePresentPriorityModalPress = useCallback(() => {
     bottomSheetPriorityModalRef.current?.present()
   }, [])
@@ -131,6 +140,9 @@ export default function TaskDetails() {
     bottomSheetDeleteModalRef.current?.present()
   }, [])
 
+  const modalHeight = keyboardVisible ? '85%' : '50%'
+  const iconList = Object.keys(FeatherIcon.getRawGlyphMap())
+
   function handleNextStep() {
     if (!date)
       return Alert.alert(
@@ -141,18 +153,20 @@ export default function TaskDetails() {
   }
 
   const handleAddCategory = async () => {
-    setIsAddCategoryLoading(true)
+    console.log('Add Category')
 
     try {
       if (title && color) {
-        await addCategory({ title, color, icon: '' })
+        await addCategory({ title, color, icon })
         Alert.alert('Add category')
+        setIsAddCategoryLoading(true)
         setTitle('')
         setColor('')
+        setIcon('')
 
         bottomSheetCreateCategoryModalRef.current?.close()
+        setIsAddCategoryLoading(false)
       }
-      setIsAddCategoryLoading(false)
     } catch (error) {
       Alert.alert('Fail to add category')
       setIsAddCategoryLoading(false)
@@ -557,9 +571,17 @@ export default function TaskDetails() {
                     className="w-20 h-20 rounded-md justify-center items-center"
                     style={{ backgroundColor: category.color }}
                   >
-                    <TagIcon size={28} color={colors.green[600]} />
+                    {category.icon ? (
+                      <FeatherIcon
+                        name={category.icon}
+                        size={28}
+                        color={colors.green[600]}
+                      />
+                    ) : (
+                      <FlagIcon color={colors.white} size={28} />
+                    )}
                   </View>
-                  <Text className="text-white">{category.title}</Text>
+                  <Text className="text-white text-sm">{category.title}</Text>
                 </TouchableOpacity>
               ))}
 
@@ -570,7 +592,7 @@ export default function TaskDetails() {
                 <View className="w-20 h-20 rounded-md justify-center items-center bg-cyan-400">
                   <FeatherIcon name="plus" size={28} color={colors.cyan[600]} />
                 </View>
-                <Text className="text-white">Create New</Text>
+                <Text className="text-white text-sm">Create New</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -605,11 +627,16 @@ export default function TaskDetails() {
                   <Text className="text-zinc-400">Category icon:</Text>
                   <TouchableOpacity
                     activeOpacity={0.7}
-                    className="bg-zinc-600 w-56 h-11 rounded-md justify-center items-center"
+                    onPress={handlePresentAddIconCategoryModalPress}
+                    className={`bg-zinc-600 h-11 rounded-md justify-center items-center ${icon ? 'w-11' : 'w-56'}`}
                   >
-                    <Text className="text-white text-sm">
-                      Choose icon from library
-                    </Text>
+                    {icon ? (
+                      <FeatherIcon name={icon} color={colors.white} size={16} />
+                    ) : (
+                      <Text className="text-white text-sm">
+                        Choose icon from library
+                      </Text>
+                    )}
                   </TouchableOpacity>
                 </View>
 
@@ -646,6 +673,64 @@ export default function TaskDetails() {
               </TouchableOpacity>
             </View>
           </KeyboardAwareScrollView>
+        </BottomSheetView>
+      </BottomSheetModal>
+
+      <BottomSheetModal
+        ref={bottomSheetAddIconCategoryModalRef}
+        backgroundStyle={{ backgroundColor: colors.zinc[800] }}
+        style={{
+          backgroundColor: colors.zinc[800],
+        }}
+        snapPoints={['80%']}
+      >
+        <BottomSheetView className="px-6 flex-1">
+          <View className="flex-col justify-between flex-1 mb-4">
+            <View>
+              <View className="border-b border-zinc-400 justify-center items-center py-3">
+                <Text className="text-white">Change an icon</Text>
+              </View>
+
+              <View className="mt-8 flex-col gap-4">
+                <Text className="text-zinc-400">Category icon:</Text>
+                <View className="flex-row flex-wrap max-w-[320px] flex-1">
+                  <FlatList
+                    data={iconList}
+                    numColumns={4}
+                    keyExtractor={item => item}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={() => {
+                          setIcon(item)
+                          handleCloseAddIconCategoryModalPress()
+                        }}
+                        className="bg-zinc-600 h-11 flex-1 m-1 rounded-md justify-center items-center"
+                      >
+                        <FeatherIcon
+                          name={item}
+                          color={colors.white}
+                          size={18}
+                        />
+                      </TouchableOpacity>
+                    )}
+                  />
+                </View>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={handleAddCategory}
+              className="bg-violet-600 h-12 rounded-md mt-12 justify-center items-center"
+            >
+              {isAddCategoryLoading ? (
+                <ActivityIndicator />
+              ) : (
+                <Text className="text-white">Add Category</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </BottomSheetView>
       </BottomSheetModal>
 

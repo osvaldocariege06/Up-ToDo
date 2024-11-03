@@ -1,5 +1,6 @@
 import { useAuthStore } from '@/src/stores/useAuthStore'
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import {
   CameraIcon,
   HeartIcon,
@@ -11,11 +12,13 @@ import {
   LogOut,
   SettingsIcon,
   User2Icon,
+  EditIcon,
 } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Keyboard,
   SafeAreaView,
   ScrollView,
@@ -25,7 +28,12 @@ import {
   View,
 } from 'react-native'
 import colors from 'tailwindcss/colors'
-import { changePassword } from '@/src/services/authService'
+import {
+  changePassword,
+  getImagesFromFirestore,
+} from '@/src/services/authService'
+import * as ImagePicker from 'expo-image-picker'
+import { app } from '@/src/config/firebaseConfig'
 
 export default function Profile() {
   const { user, handleLogout, editUserName } = useAuthStore()
@@ -37,6 +45,69 @@ export default function Profile() {
   const [isPasswordLoading, setIsPasswordLoading] = useState(false)
 
   const [keyboardVisible, setKeyboardVisible] = useState(false)
+  const [images, setImages] = useState<string[]>([])
+
+  const [isImageLoading, setIsImageLoading] = useState(false)
+
+  // // ref
+  const bottomSheetNameModalRef = useRef<BottomSheetModal>(null)
+  const bottomSheetPasswordModalRef = useRef<BottomSheetModal>(null)
+  const bottomSheetImageModalRef = useRef<BottomSheetModal>(null)
+
+  // callbacks
+  const handlePresentNameModalPress = useCallback(() => {
+    bottomSheetNameModalRef.current?.present()
+  }, [])
+
+  const handlePresentPasswordModalPress = useCallback(() => {
+    bottomSheetPasswordModalRef.current?.present()
+  }, [])
+
+  const handlePresentImageModalPress = useCallback(() => {
+    bottomSheetImageModalRef.current?.present()
+  }, [])
+
+  const pickImage = async () => {
+    setIsImageLoading(true)
+
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (status !== 'granted') {
+      alert('Please, We need permission to access your gallery.')
+      return
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    })
+
+    if (!result.canceled) {
+      const storage = getStorage(app)
+      const imageUri = result.assets[0].uri
+      const response = await fetch(imageUri)
+      const blob = await response.blob()
+      const storageRef = ref(
+        storage,
+        `images/${Date.now()}_${imageUri.split('/').pop()}`
+      )
+
+      console.log('storageRef: ', storageRef)
+
+      try {
+        await uploadBytes(storageRef, blob)
+        const downloadURL = await getDownloadURL(storageRef)
+        setIsImageLoading(false)
+        console.log('Image Uploaded', downloadURL)
+        return downloadURL
+      } catch (error) {
+        console.error('Failed to Upload image', error)
+        setIsImageLoading(false)
+        throw new Error('Upload fail')
+      }
+    }
+  }
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
@@ -64,24 +135,6 @@ export default function Profile() {
     setIsNewNameLoading(false)
   }
 
-  // // ref
-  const bottomSheetNameModalRef = useRef<BottomSheetModal>(null)
-  const bottomSheetPasswordModalRef = useRef<BottomSheetModal>(null)
-  const bottomSheetImageModalRef = useRef<BottomSheetModal>(null)
-
-  // callbacks
-  const handlePresentNameModalPress = useCallback(() => {
-    bottomSheetNameModalRef.current?.present()
-  }, [])
-
-  const handlePresentPasswordModalPress = useCallback(() => {
-    bottomSheetPasswordModalRef.current?.present()
-  }, [])
-
-  const handlePresentImageModalPress = useCallback(() => {
-    bottomSheetImageModalRef.current?.present()
-  }, [])
-
   const handleEditPassword = async () => {
     if (!oldPassword && !newPassword) {
       return Alert.alert(
@@ -103,6 +156,15 @@ export default function Profile() {
     }
   }
 
+  useEffect(() => {
+    const fetchImages = async () => {
+      const fetchedImages = await getImagesFromFirestore()
+      setImages(fetchedImages.map(img => img.url)) // Supondo que `url` seja o campo com a URL da imagem
+    }
+
+    fetchImages()
+  }, [])
+
   return (
     <SafeAreaView className="flex-1 bg-black">
       <ScrollView>
@@ -110,11 +172,44 @@ export default function Profile() {
           Profile
         </Text>
 
-        <View className="w-20 h-20 rounded-full justify-center items-center bg-violet-600 mx-auto">
-          <User2Icon color={colors.white} size={32} />
-        </View>
+        {isImageLoading ? (
+          <View className="w-28 h-28 justify-center items-center bg-violet-950 rounded-full mx-auto opacity-40">
+            <ActivityIndicator color={colors.white} />
+          </View>
+        ) : (
+          <>
+            {images.length ? (
+              <View className="relative rounded-full mx-auto mt-8 items-end">
+                {images.map(uri => (
+                  <View
+                    key={uri}
+                    className="w-28 h-28 border border-violet-600 rounded-full mx-auto"
+                  >
+                    <Image
+                      source={{ uri }}
+                      className="w-28 h-28 rounded-full"
+                    />
+                  </View>
+                ))}
+                <TouchableOpacity
+                  onPress={pickImage}
+                  className="absolute bottom-2 right-0 bg-violet-600 rounded-full p-1 justify-center items-center"
+                >
+                  <EditIcon size={18} color={colors.zinc[50]} />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                onPress={pickImage}
+                className="w-28 h-28 rounded-full justify-center items-center bg-violet-600 mx-auto"
+              >
+                <User2Icon color={colors.white} size={32} />
+              </TouchableOpacity>
+            )}
+          </>
+        )}
 
-        <Text className="text-white text-lg font-medium text-center px-6 mt-4">
+        <Text className="text-white text-lg font-medium text-center px-6 mt-8">
           {user?.displayName}
         </Text>
 
@@ -197,7 +292,7 @@ export default function Profile() {
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={handleLogout}
-            className="border border-red-800 mt-8 px-4 h-12 rounded-md items-center gap-4 flex-row"
+            className="border border-red-800 mt-8 px-4 mb-20 h-12 rounded-md items-center gap-4 flex-row"
           >
             <LogOut color={colors.red[800]} size={20} />
             <Text className="text-red-800">Log out</Text>
