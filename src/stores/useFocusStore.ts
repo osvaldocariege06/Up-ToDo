@@ -1,8 +1,7 @@
-// src/store/focusStore.ts
 import { create } from 'zustand'
 
 interface FocusState {
-  focusTime: number // Tempo em segundos para o modo de concentração
+  focusTime: number
   isFocusModeActive: boolean
   startFocusMode: (time: number) => void
   stopFocusMode: () => void

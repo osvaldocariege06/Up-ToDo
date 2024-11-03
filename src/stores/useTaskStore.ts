@@ -156,7 +156,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     )
 
     set({ tasks: updatedTasks })
-    await updateTaskStatus(id, true) // Atualiza o status no Firestore
+    await updateTaskStatus(id, true)
   },
   cancelTask: async id => {
     const tasks = get().tasks
@@ -165,6 +165,6 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     )
 
     set({ tasks: updatedTasks })
-    await updateTaskStatus(id, false) // Atualiza o status no Firestore
+    await updateTaskStatus(id, false)
   },
 }))

@@ -173,7 +173,7 @@ export default function App() {
   useAuthRedirect()
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    loadUserData() // Carrega o estado de autenticação ao iniciar
+    loadUserData()
     loadTasks()
     loadCategories()
   }, [])

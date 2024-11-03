@@ -1,4 +1,3 @@
-// src/store/useAuthStore.ts
 import { create } from 'zustand'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -8,7 +7,6 @@ import {
   type signUpProps,
   type signInProps,
   updateUserName,
-  loginWithGoogle,
 } from '../services/authService'
 import { getAuth, onAuthStateChanged, type User } from 'firebase/auth'
 import { router } from 'expo-router'
@@ -56,23 +54,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     router.replace('/(pages)/(tabs)/')
   },
 
-  handleLoginWithGoogle: async () => {
-    try {
-      const result = await loginWithGoogle()
-      if (result.success) {
-        const { user } = result
-        if (!user) return
-        const token = await user.getIdToken()
-        await AsyncStorage.setItem('userToken', token)
-        set({ user, token })
-        router.replace('/(pages)/(tabs)/')
-      } else {
-        console.error('Erro de autenticação com Google:', result.error)
-      }
-    } catch (error) {
-      console.error('Erro no login com Google:', error)
-    }
-  },
+  handleLoginWithGoogle: async () => {},
 
   handleRegister: async (data: signUpProps) => {
     const user = await signUp(data)

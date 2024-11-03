@@ -1,4 +1,3 @@
-// src/hooks/useAuthRedirect.ts
 import { useEffect } from 'react'
 import { useRouter } from 'expo-router'
 import { useAuthStore } from '../stores/useAuthStore'

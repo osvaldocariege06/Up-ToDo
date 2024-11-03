@@ -7,7 +7,7 @@ import {
   SortDescIcon,
   User2Icon,
 } from 'lucide-react-native'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -31,12 +31,6 @@ export default function Home() {
 
   const taskToday = tasks.filter(task => task.completed === false)
   const taskCompleted = tasks.filter(task => task.completed === true)
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    // filterTasksByTitleAndCompleted(search, true)
-    console.log('taskToday', filteredTasks)
-  }, [search])
 
   return (
     <SafeAreaView className="flex-1 bg-black">

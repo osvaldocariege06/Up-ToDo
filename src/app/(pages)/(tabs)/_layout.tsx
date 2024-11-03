@@ -1,20 +1,14 @@
 import React from 'react'
-import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { Link, Tabs } from 'expo-router'
 import {
   CalendarDaysIcon,
   ClockIcon,
   HomeIcon,
-  type LucideIcon,
   Plus,
   User2Icon,
 } from 'lucide-react-native'
 import { Pressable, Text } from 'react-native'
 import colors from 'tailwindcss/colors'
-
-function TabBarIcon(props: LucideIcon) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />
-}
 
 export default function TabLayout() {
   return (
@@ -22,7 +16,6 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: colors.zinc[100],
         tabBarStyle: { backgroundColor: colors.zinc[800], height: 60 },
-        // headerShown: useClientOnlyValue(false, true),
       }}
     >
       <Tabs.Screen

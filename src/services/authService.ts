@@ -1,7 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { app } from '../config/firebaseConfig'
-// import auth from '@react-native-firebase/auth'
-// import firestore from '@react-native-firebase/firestore'
 
 import {
   getAuth,
@@ -86,50 +84,12 @@ export const signIn = async (data: signInProps) => {
 
 export const getImagesFromFirestore = async () => {
   const db = getFirestore(app)
-  const imagesCollection = collection(db, 'images') // Nome da coleção onde as URLs estão armazenadas
+  const imagesCollection = collection(db, 'images')
   const snapshot = await getDocs(imagesCollection)
   const images = snapshot.docs.map(doc => doc.data())
 
-  return images // Array com os dados das imagens
+  return images
 }
-
-// export const loginWithGoogle = async () => {
-//   try {
-//     const { getToken } = useAuth()
-//     const { user } = useUser() // Use `useUser` para acessar as informações do usuário autenticado
-//     const token = await getToken()
-
-//     if (!user) {
-//       throw new Error('Usuário não autenticado no Clerk.')
-//     }
-
-//     // Usar o token para autenticar no Firebase
-//     const firebaseCredential = auth.GoogleAuthProvider.credential(token)
-//     const firebaseUserCredential =
-//       await auth().signInWithCredential(firebaseCredential)
-
-//     // Armazenar as informações do usuário no Firestore (opcional)
-//     await firestore()
-//       .collection('users')
-//       .doc(user.id)
-//       .set({
-//         name: user.fullName || 'Nome não disponível',
-//         email: user.emailAddresses[0]?.emailAddress || 'Email não disponível',
-//         createdAt: new Date(),
-//       })
-
-//     return {
-//       success: true,
-//       user: firebaseUserCredential.user,
-//     }
-//   } catch (error) {
-//     console.error('Erro ao fazer login com Google:', error)
-//     return {
-//       success: false,
-//       error: error instanceof Error ? error.message : 'Erro desconhecido',
-//     }
-//   }
-// }
 
 export const updateUser = async (user: User) => {
   try {
@@ -191,11 +151,9 @@ export const changePassword = async (
       throw new Error('User not authenticated')
     }
 
-    // Reautenticar o usuário
     const credential = EmailAuthProvider.credential(user.email, oldPassword)
     await reauthenticateWithCredential(user, credential)
 
-    // Atualizar a senha
     await updatePassword(user, newPassword)
     console.log('Password update successful')
   } catch (error) {

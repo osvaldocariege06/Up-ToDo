@@ -49,7 +49,7 @@ export default function Profile() {
 
   const [isImageLoading, setIsImageLoading] = useState(false)
 
-  // // ref
+  // ref
   const bottomSheetNameModalRef = useRef<BottomSheetModal>(null)
   const bottomSheetPasswordModalRef = useRef<BottomSheetModal>(null)
   const bottomSheetImageModalRef = useRef<BottomSheetModal>(null)
@@ -159,7 +159,7 @@ export default function Profile() {
   useEffect(() => {
     const fetchImages = async () => {
       const fetchedImages = await getImagesFromFirestore()
-      setImages(fetchedImages.map(img => img.url)) // Supondo que `url` seja o campo com a URL da imagem
+      setImages(fetchedImages.map(img => img.url))
     }
 
     fetchImages()

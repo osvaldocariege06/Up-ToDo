@@ -1,4 +1,3 @@
-// src/hooks/useFocusTimer.ts
 import { useEffect } from 'react'
 import { useFocusStore } from '../stores/useFocusStore'
 
