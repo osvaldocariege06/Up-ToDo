@@ -12,7 +12,6 @@ import {
   LogOut,
   SettingsIcon,
   User2Icon,
-  EditIcon,
 } from 'lucide-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
@@ -93,8 +92,6 @@ export default function Profile() {
         `images/${Date.now()}_${imageUri.split('/').pop()}`
       )
 
-      console.log('storageRef: ', storageRef)
-
       try {
         await uploadBytes(storageRef, blob)
         const downloadURL = await getDownloadURL(storageRef)
@@ -107,6 +104,23 @@ export default function Profile() {
         throw new Error('Upload fail')
       }
     }
+  }
+
+  const takePicture = async () => {
+    setIsImageLoading(true)
+
+    const { status } = await ImagePicker.requestCameraPermissionsAsync()
+    if (status !== 'granted') {
+      alert('Please, We need permission to access your camera.')
+      return
+    }
+
+    await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    })
   }
 
   useEffect(() => {
@@ -172,48 +186,28 @@ export default function Profile() {
           Profile
         </Text>
 
-        {isImageLoading ? (
-          <View className="w-28 h-28 justify-center items-center bg-violet-950 rounded-full mx-auto opacity-40">
-            <ActivityIndicator color={colors.white} />
+        {images.length ? (
+          <View className="relative rounded-full mx-auto mt-8 items-end">
+            {images.map(uri => (
+              <View
+                key={uri}
+                className="w-28 h-28 border border-violet-600 rounded-full mx-auto"
+              >
+                <Image source={{ uri }} className="w-28 h-28 rounded-full" />
+              </View>
+            ))}
           </View>
         ) : (
-          <>
-            {images.length ? (
-              <View className="relative rounded-full mx-auto mt-8 items-end">
-                {images.map(uri => (
-                  <View
-                    key={uri}
-                    className="w-28 h-28 border border-violet-600 rounded-full mx-auto"
-                  >
-                    <Image
-                      source={{ uri }}
-                      className="w-28 h-28 rounded-full"
-                    />
-                  </View>
-                ))}
-                <TouchableOpacity
-                  onPress={pickImage}
-                  className="absolute bottom-2 right-0 bg-violet-600 rounded-full p-1 justify-center items-center"
-                >
-                  <EditIcon size={18} color={colors.zinc[50]} />
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <TouchableOpacity
-                onPress={pickImage}
-                className="w-28 h-28 rounded-full justify-center items-center bg-violet-600 mx-auto"
-              >
-                <User2Icon color={colors.white} size={32} />
-              </TouchableOpacity>
-            )}
-          </>
+          <View className="w-28 h-28 rounded-full justify-center items-center bg-violet-600 mx-auto">
+            <User2Icon color={colors.white} size={32} />
+          </View>
         )}
 
-        <Text className="text-white text-lg font-medium text-center px-6 mt-8">
+        <Text className="text-white text-lg font-medium text-center px-6 mt-2">
           {user?.displayName}
         </Text>
 
-        <View className="px-6 flex-col gap-6">
+        <View className="px-6 flex-col gap-6 mt-8">
           <View className="flex-col gap-4">
             <Text className="text-sm text-zinc-400">Settings</Text>
             <TouchableOpacity
@@ -401,7 +395,7 @@ export default function Profile() {
 
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={handlePresentImageModalPress}
+            onPress={takePicture}
             className="flex-row gap-2 items-center px-2 mt-8"
           >
             <CameraIcon color={colors.zinc[100]} size={20} />
@@ -410,7 +404,7 @@ export default function Profile() {
 
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={handlePresentImageModalPress}
+            onPress={pickImage}
             className="flex-row gap-2 items-center px-2 mt-6"
           >
             <ImageIcon color={colors.zinc[100]} size={20} />

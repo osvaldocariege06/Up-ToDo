@@ -9,19 +9,26 @@ import {
   updateTaskTitleAndDescription,
   updateTaskTime,
   updateTaskPriority,
+  filterTasksByDateRange,
 } from '../services/taskServices'
+import { router } from 'expo-router'
 
 interface TaskState {
+  task: TaskProps | null
   tasks: TaskProps[]
   filteredTasks: TaskProps[]
   loading: boolean
   loadTasks: () => Promise<void>
   addTask: (task: Omit<TaskProps, 'id'>) => Promise<void>
   editTask: (taskId: string, taskData: Partial<TaskProps>) => Promise<void>
-  updateTaskTitleAndDescription: (
+  updateTaskTitleAndDescriptions: (
     taskId: string,
     title: string,
     description: string
+  ) => Promise<void>
+  filterTasksByDateRange: (
+    startDate: string | undefined,
+    endDate: string | undefined
   ) => Promise<void>
   editTaskTime: (taskId: string, newTime: string) => Promise<void>
   editTaskPriority: (taskId: string, newPriority: string) => Promise<void>
@@ -35,6 +42,7 @@ interface TaskState {
 }
 
 export const useTaskStore = create<TaskState>((set, get) => ({
+  task: null,
   tasks: [],
   filteredTasks: [],
   loading: false,
@@ -56,8 +64,11 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     try {
       await createTask(task)
       set(state => ({
+        task: task,
         tasks: [...state.tasks, { ...task, completed: false }],
       }))
+
+      router.push('/(pages)/(tabs)/calendar/')
     } catch (error) {
       console.error('Erro ao adicionar task:')
     } finally {
@@ -81,16 +92,33 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     }
   },
 
-  updateTaskTitleAndDescription: async (taskId, title, description) => {
+  updateTaskTitleAndDescriptions: async (taskId, title?, description?) => {
     try {
       await updateTaskTitleAndDescription(taskId, title, description)
+
       set(state => ({
-        tasks: state.tasks.map(task =>
-          task.id === taskId ? { ...task, title, description } : task
-        ),
+        tasks: state.tasks.map(task => {
+          if (task.id === taskId) {
+            return {
+              ...task,
+              ...(title !== undefined ? { title } : {}),
+              ...(description !== undefined ? { description } : {}),
+            }
+          }
+          return task
+        }),
       }))
     } catch (error) {
       console.error('Erro ao editar tarefa:', error)
+    }
+  },
+
+  filterTasksByDateRange: async (startDate, endDate) => {
+    try {
+      const filteredTasks = await filterTasksByDateRange(startDate, endDate)
+      set({ tasks: filteredTasks })
+    } catch (error) {
+      console.error('Erro ao filtrar tarefas:', error)
     }
   },
 

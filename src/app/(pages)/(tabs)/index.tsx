@@ -45,7 +45,7 @@ export default function Home() {
             </View>
           </View>
 
-          <View className="mt-6 flex-row gap-5 px-6 border border-zinc-600 rounded-md h-12 mx-6 items-center">
+          <View className="mt-6 flex-row gap-5 px-6 border border-zinc-600 rounded-md h-12 mx-6 items-center hidden">
             <TouchableOpacity>
               <SearchIcon size={24} color={colors.zinc[500]} />
             </TouchableOpacity>
@@ -63,13 +63,13 @@ export default function Home() {
           {tasks.length !== 0 ? (
             <>
               {tasks.length > 0 ? (
-                <View className="flex-1  gap-4 p-6 mt-6">
+                <View className="flex-1  gap-4 p-6">
                   <View className="flex-col gap-6">
                     <TouchableOpacity
                       onPress={() => setShowTaskToday(!showTaskToday)}
                       className="bg-zinc-600 h-11 w-28 rounded-md justify-center items-center flex-row gap-2"
                     >
-                      <Text className="text-white text-sm">Today</Text>
+                      <Text className="text-white text-sm">Pendents</Text>
                       {showTaskToday ? (
                         <ChevronUp color={colors.white} size={18} />
                       ) : (

@@ -34,9 +34,10 @@ import DatePicker from '@/src/components/DatePicker'
 import { COLORS } from '@/src/utils/colors-category'
 import { PRIORITY } from '@/src/utils/prioritys'
 import { useCategoryStore } from '@/src/stores/useCategoryStore'
+import type { TaskProps } from '@/src/types/TaskProps'
 
 export default function TaskDetails() {
-  const { tasks, removeTask, updateTaskTitleAndDescription, editTaskTime } =
+  const { tasks, removeTask, updateTaskTitleAndDescriptions, editTaskTime } =
     useTaskStore()
   const { categories, addCategory } = useCategoryStore()
   const { taskId } = useLocalSearchParams<{ taskId: string }>()
@@ -53,10 +54,12 @@ export default function TaskDetails() {
   const [isDateTimeLoading, setIsDateTimeLoading] = useState(false)
   const [isAddCategoryLoading, setIsAddCategoryLoading] = useState(false)
   const [isPriorityLoading, setIsPriorityLoading] = useState(false)
+  const [isDeleteTaskLoading, setIsDeleteTaskLoading] = useState(false)
 
   const [categoryId, setCategoryId] = useState('')
   const [color, setColor] = useState('')
   const [priorityCount, setPriorityCount] = useState('')
+  const [task, setTask] = useState<TaskProps>()
 
   const [keyboardVisible, setKeyboardVisible] = useState(false)
 
@@ -153,8 +156,6 @@ export default function TaskDetails() {
   }
 
   const handleAddCategory = async () => {
-    console.log('Add Category')
-
     try {
       if (title && color) {
         await addCategory({ title, color, icon })
@@ -189,7 +190,7 @@ export default function TaskDetails() {
   const handleSave = async () => {
     setIsLoading(true)
     try {
-      await updateTaskTitleAndDescription(taskId, title, description)
+      await updateTaskTitleAndDescriptions(taskId, title, description)
       setIsLoading(false)
       handlePresentNameModalPress()
     } catch (error) {
@@ -226,10 +227,17 @@ export default function TaskDetails() {
   }
 
   async function handleDeleteTask() {
+    setIsDeleteTaskLoading(true)
     await removeTask(deleteTaskId)
     handleCloseDeleteModalPress()
+    setIsDeleteTaskLoading(false)
     router.back()
   }
+
+  useEffect(() => {
+    const task = tasks.find(item => item.id === taskId)
+    setTask(task)
+  }, [tasks, taskId])
 
   return (
     <SafeAreaView className="flex-1 bg-black">
@@ -431,6 +439,7 @@ export default function TaskDetails() {
               <Text className="text-zinc-400">Title</Text>
               <TextInput
                 placeholder="Task title"
+                defaultValue={task?.title}
                 className="h-12 px-4 rounded-md border border-zinc-600 text-white"
                 onChangeText={setTitle}
                 value={title}
@@ -441,6 +450,7 @@ export default function TaskDetails() {
               <Text className="text-zinc-400">Description</Text>
               <TextInput
                 placeholder="Task description"
+                defaultValue={task?.description}
                 className="h-20 px-4 rounded-md border border-zinc-600 text-white"
                 multiline
                 numberOfLines={6}
@@ -558,7 +568,7 @@ export default function TaskDetails() {
             <View className="w-[280px] flex-wrap flex-row gap-8">
               {categories.map(category => (
                 <TouchableOpacity
-                  key={category.color}
+                  key={category.title}
                   onPress={() => {
                     if (!category.id) {
                       return
@@ -575,7 +585,7 @@ export default function TaskDetails() {
                       <FeatherIcon
                         name={category.icon}
                         size={28}
-                        color={colors.green[600]}
+                        color={colors.white}
                       />
                     ) : (
                       <FlagIcon color={colors.white} size={28} />
@@ -592,7 +602,7 @@ export default function TaskDetails() {
                 <View className="w-20 h-20 rounded-md justify-center items-center bg-cyan-400">
                   <FeatherIcon name="plus" size={28} color={colors.cyan[600]} />
                 </View>
-                <Text className="text-white text-sm">Create New</Text>
+                <Text className="text-white text-sm">Create</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -769,13 +779,6 @@ export default function TaskDetails() {
                       <FlagIcon color={colors.white} size={28} />
                     </View>
                   )}
-                  {/* <View className="w-20 h-20 rounded-md justify-center items-center bg-zinc-700">
-                    {isPriorityLoading ? (
-                      <ActivityIndicator />
-                    ) : (
-                      <FlagIcon color={colors.white} size={28} />
-                    )}
-                  </View> */}
 
                   <Text className="text-white">{priority.count}</Text>
                 </TouchableOpacity>
@@ -800,15 +803,20 @@ export default function TaskDetails() {
 
           <Text className="text-zinc-200 text-center mt-6">
             Are You sure you want to delete this task? Task title:{' '}
-            <Text className="text-violet-600">Do math homework</Text>
+            <Text className="text-red-600">{task?.title}</Text>
           </Text>
 
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={handleDeleteTask}
+            disabled={isDeleteTaskLoading}
             className="bg-red-600 h-12 rounded-md mt-12 justify-center items-center"
           >
-            <Text className="text-white">Delete</Text>
+            {isDeleteTaskLoading ? (
+              <ActivityIndicator />
+            ) : (
+              <Text className="text-white">Delete</Text>
+            )}
           </TouchableOpacity>
         </BottomSheetView>
       </BottomSheetModal>

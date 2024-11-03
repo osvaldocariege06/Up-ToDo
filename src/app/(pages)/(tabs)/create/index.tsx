@@ -2,7 +2,8 @@ import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from '@react-native-community/datetimepicker'
-import FeatherIcon from '@expo/vector-icons/Feather'
+import FeatherIcon from 'react-native-vector-icons/Feather'
+
 import {
   FlagIcon,
   SendHorizonal,
@@ -175,6 +176,9 @@ export default function Create() {
         priority: priorityCount,
       })
 
+      setCategoryId('')
+      setPriorityCount('')
+      setDate(undefined)
       reset({
         title: '',
         description: '',
@@ -265,7 +269,7 @@ export default function Create() {
                     .filter(category => category.id === categoryId)
                     .map(category => (
                       <View
-                        key={category.id}
+                        key={category.title}
                         style={{ backgroundColor: category.color }}
                         className="px-2 h-7 ml-2 rounded-md justify-center flex-row gap-2 items-center"
                       >
@@ -431,11 +435,15 @@ export default function Create() {
                       className="w-20 h-20 rounded-md justify-center items-center"
                       style={{ backgroundColor: category.color }}
                     >
-                      <FeatherIcon
-                        name={'activity'}
-                        size={28}
-                        color={colors.green[50]}
-                      />
+                      {category.icon ? (
+                        <FeatherIcon
+                          name={category.icon}
+                          size={28}
+                          color={colors.white}
+                        />
+                      ) : (
+                        <FlagIcon color={colors.white} size={28} />
+                      )}
                     </View>
                     <Text className="text-white">{category.title}</Text>
                   </TouchableOpacity>
@@ -452,7 +460,7 @@ export default function Create() {
                       color={colors.cyan[600]}
                     />
                   </View>
-                  <Text className="text-white">Create New</Text>
+                  <Text className="text-white text-sm">Create</Text>
                 </TouchableOpacity>
               </View>
             </View>

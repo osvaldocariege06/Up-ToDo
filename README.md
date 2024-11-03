@@ -1,3 +1,5 @@
+import src from "@react-native-community/datetimepicker"
+
 # 📱UpTodo
 
 ## 🎯 Sobre
@@ -21,11 +23,13 @@ UpTodo é um aplicativo de lista de tarefas desenvolvido com React Native, Expo 
 
 ## ✨ Características
 
-- **Adicionar, editar e excluir tarefas**.
-- **Gerenciamento de categorias personalizadas**, incluindo seleção de ícones e cores.
-- **Modo de foco** com temporizador integrado.
-- **Autenticação com Google** para facilitar o login e sincronização de dados.
-- **Design responsivo**: adaptado para diversos dispositivos.
+- [x] **Adicionar, editar e excluir tarefas**.
+- [x] **Gerenciamento de categorias personalizadas**, incluindo seleção de ícones e cores.
+- [x] **Modo de foco** com temporizador integrado.
+- [x] **Editar os dados do usuário** (nome e senha).
+- [x] **Design responsivo**: adaptado para diversos dispositivos.
+- [ ] **Editar foto de perfil do usuário**
+- [ ] **Autenticação com Google** para facilitar o login e sincronização de dados.
 
 ## ✅ Como Executar o Projeto
 

@@ -152,6 +152,7 @@ export default function Register() {
                 placeholder="Enter your password"
                 autoCapitalize="none"
                 className={`h-12 px-4 rounded-md border border-zinc-600 text-white ${errors.password && 'border border-pink-600'}`}
+                secureTextEntry
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -178,6 +179,7 @@ export default function Register() {
                 placeholder="Enter your Confirm password"
                 autoCapitalize="none"
                 className={`h-12 px-4 rounded-md border border-zinc-600 text-white ${errors.confirmPassword && 'border border-pink-600'}`}
+                secureTextEntry
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}

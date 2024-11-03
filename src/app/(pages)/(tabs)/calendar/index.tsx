@@ -1,7 +1,8 @@
 import { TaskCard } from '@/src/components/TaskCard'
 import { useTaskStore } from '@/src/stores/useTaskStore'
+import { BottomSheetView, BottomSheetModal } from '@gorhom/bottom-sheet'
 import { CalendarDaysIcon } from 'lucide-react-native'
-import { useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -11,13 +12,38 @@ import {
   View,
 } from 'react-native'
 import colors from 'tailwindcss/colors'
+import DatePicker from '@/src/components/DatePicker'
+import dayjs from 'dayjs'
+import type { DateData } from 'react-native-calendars'
+import type { DateSelected } from '@/src/types/dateSelected'
+import { calendarUtils } from '@/src/utils/calendarUtils'
 
 export default function Calendar() {
-  const { tasks } = useTaskStore()
+  const { tasks, filterTasksByDateRange } = useTaskStore()
   const [taskToggle, setTaskToggle] = useState<'today' | 'completed'>('today')
+  const [selectedDateRange, setSelectedRange] = useState({} as DateSelected)
+  const [date, setDate] = useState<DateData>()
 
   const taskToday = tasks.filter(task => task.completed === false)
   const taskCompleted = tasks.filter(task => task.completed === true)
+
+  // ref
+  const bottomSheetDateModalRef = useRef<BottomSheetModal>(null)
+
+  // callbacks
+  const handlePresentDateModalPress = useCallback(() => {
+    bottomSheetDateModalRef.current?.present()
+  }, [])
+
+  function handleSelectDate(selectedDay: DateData) {
+    const dates = calendarUtils.orderStartsAtAndEndsAt({
+      startsAt: selectedDateRange.startsAt,
+      endsAt: selectedDateRange.endsAt,
+      selectedDay,
+    })
+
+    setSelectedRange(dates)
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-black">
@@ -29,6 +55,7 @@ export default function Calendar() {
 
           <TouchableOpacity
             activeOpacity={0.7}
+            onPress={handlePresentDateModalPress}
             className="p-2 rounded-md items-center flex-row gap-4 border border-zinc-600 h-11 mt-6"
           >
             <CalendarDaysIcon color={colors.zinc[600]} size={20} />
@@ -49,7 +76,7 @@ export default function Calendar() {
                   taskToggle === 'today' ? 'text-violet-50' : 'text-zinc-400'
                 }
               >
-                Today
+                Pendings
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -132,6 +159,28 @@ export default function Calendar() {
           )}
         </View>
       </ScrollView>
+
+      <BottomSheetModal
+        ref={bottomSheetDateModalRef}
+        backgroundStyle={{ backgroundColor: colors.zinc[800] }}
+        style={{
+          backgroundColor: colors.zinc[800],
+        }}
+      >
+        <BottomSheetView className="px-6">
+          <View className="border-b border-zinc-400 justify-center items-center py-3">
+            <Text className="text-white">Change account Image</Text>
+          </View>
+
+          <View className=" mt-8 mb-4">
+            <DatePicker
+              onDayPress={handleSelectDate}
+              markedDates={selectedDateRange.dates}
+              minDate={dayjs().toISOString()}
+            />
+          </View>
+        </BottomSheetView>
+      </BottomSheetModal>
     </SafeAreaView>
   )
 }

@@ -6,6 +6,8 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  query,
+  where,
 } from 'firebase/firestore'
 import type { TaskProps } from '../types/TaskProps'
 
@@ -37,8 +39,8 @@ export const updateTask = async (
 
 export const updateTaskTitleAndDescription = async (
   taskId: string,
-  title: string,
-  description: string
+  title?: string,
+  description?: string
 ) => {
   try {
     const taskRef = doc(db, 'tasks', taskId)
@@ -69,6 +71,31 @@ export const updateTaskTime = async (taskId: string, newTime: string) => {
     await updateDoc(taskRef, { time: newTime })
   } catch (error) {
     console.error('Erro ao atualizar horário da tarefa:', error)
+    throw error
+  }
+}
+
+export const filterTasksByDateRange = async (
+  startDate: string | undefined,
+  endDate: string | undefined
+): Promise<TaskProps[]> => {
+  try {
+    const taskCollectionRef = collection(db, 'tasks')
+    const q = query(
+      taskCollectionRef,
+      where('date', '>=', startDate),
+      where('date', '<=', endDate)
+    )
+    const querySnapshot = await getDocs(q)
+
+    const tasks: TaskProps[] = []
+    for (const doc of querySnapshot.docs) {
+      tasks.push({ id: doc.id, ...doc.data() } as TaskProps)
+    }
+
+    return tasks
+  } catch (error) {
+    console.error('Failed to find tasks:', error)
     throw error
   }
 }
