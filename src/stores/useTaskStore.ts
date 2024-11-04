@@ -10,6 +10,7 @@ import {
   updateTaskTime,
   updateTaskPriority,
   filterTasksByDateRange,
+  fetchTasksByUserEmail,
 } from '../services/taskServices'
 import { router } from 'expo-router'
 
@@ -19,6 +20,7 @@ interface TaskState {
   filteredTasks: TaskProps[]
   loading: boolean
   loadTasks: () => Promise<void>
+  fetchTasksByUser: (userEmail: string) => Promise<void>
   addTask: (task: Omit<TaskProps, 'id'>) => Promise<void>
   editTask: (taskId: string, taskData: Partial<TaskProps>) => Promise<void>
   updateTaskTitleAndDescriptions: (
@@ -56,6 +58,15 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       console.error('Erro ao buscar tasks:')
     } finally {
       set({ loading: false })
+    }
+  },
+
+  fetchTasksByUser: async userEmail => {
+    try {
+      const tasks = await fetchTasksByUserEmail(userEmail)
+      set({ tasks })
+    } catch (error) {
+      console.error('Failed to fetch tasks by user:', error)
     }
   },
 

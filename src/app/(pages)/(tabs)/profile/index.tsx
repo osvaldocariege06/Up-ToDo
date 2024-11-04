@@ -145,6 +145,7 @@ export default function Profile() {
     if (newName.trim()) {
       await editUserName(newName)
       setIsNewNameLoading(false)
+      bottomSheetNameModalRef.current?.close()
     }
     setIsNewNameLoading(false)
   }

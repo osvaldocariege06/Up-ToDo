@@ -39,7 +39,7 @@ Antes de começar 🏁, você precisa ter:
 
 - Node.js instalado
 - Expo CLI configurado
-- Conta do Firebase configurada
+- Conta do Firebase configurada****
 
 ### Passos para iniciar o projeto
 
@@ -50,7 +50,7 @@ Antes de começar 🏁, você precisa ter:
 
 ## 📺 Demonstração do App
 
-[![Apresentação do Up-ToDo](https://img.shields.io/badge/YouTube-Video-red?logo=youtube&logoColor=white)](https://youtu.be/tr43iLhS634?si=AdXqknEYBSOfreOC)
+[![Apresentação do Up-ToDo](https://img.shields.io/badge/YouTube-Video-red?logo=youtube&logoColor=white)](https://youtu.be/Mj4z3d6k9mQ?si=uS7py02kry3J8jaX)
 
 Clique no badge para assistir à apresentação do aplicativo no YouTube.
 

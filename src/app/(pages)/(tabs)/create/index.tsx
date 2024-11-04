@@ -40,6 +40,7 @@ import { useCategoryStore } from '@/src/stores/useCategoryStore'
 import { PRIORITY } from '@/src/utils/prioritys'
 import { COLORS } from '@/src/utils/colors-category'
 import DatePicker from '@/src/components/DatePicker'
+import { useAuthStore } from '@/src/stores/useAuthStore'
 
 const taskSchema = z.object({
   title: z.string().min(1),
@@ -53,6 +54,7 @@ export type TaskFormInputs = z.infer<typeof taskSchema>
 
 export default function Create() {
   const { addTask } = useTaskStore()
+  const { user } = useAuthStore()
   const { categories, addCategory } = useCategoryStore()
 
   const [date, setDate] = useState<DateData>()
@@ -166,6 +168,9 @@ export default function Create() {
   })
 
   const onSubmit = async (data: TaskFormInputs) => {
+    if (!user?.email) {
+      return Alert.alert('User email not found!', 'Please enter your email')
+    }
     const time = combineDateAndTime().toDateString()
     setIsLoading(true)
     try {
@@ -173,6 +178,7 @@ export default function Create() {
         ...data,
         time,
         categoryId,
+        userEmail: user?.email,
         priority: priorityCount,
       })
 

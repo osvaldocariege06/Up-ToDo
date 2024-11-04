@@ -63,7 +63,7 @@ export default function Register() {
         password: data.password,
         username: data.name,
       })
-      Alert.alert('Registro bem-sucedido!', 'Você já pode fazer login.')
+      Alert.alert('Success!', 'Welcome! to Up-ToDo')
       setIsLoading(false)
       reset({
         name: '',

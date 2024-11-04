@@ -6,4 +6,5 @@ export type TaskProps = {
   time?: string
   categoryId?: string
   priority?: string
+  userEmail: string
 }

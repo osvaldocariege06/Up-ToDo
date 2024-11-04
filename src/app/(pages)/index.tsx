@@ -2,11 +2,11 @@ import { View, Text, SafeAreaView, Image, TouchableOpacity } from 'react-native'
 import type React from 'react'
 import { type Dispatch, useEffect, useState } from 'react'
 import { router } from 'expo-router'
-import useAuthRedirect from '../hooks/useAuthRedirect'
-import { useAuthStore } from '../stores/useAuthStore'
-import { SplashScreen } from '../components/splashScreen'
-import { useTaskStore } from '../stores/useTaskStore'
-import { useCategoryStore } from '../stores/useCategoryStore'
+import useAuthRedirect from '../../hooks/useAuthRedirect'
+import { useAuthStore } from '../../stores/useAuthStore'
+import { SplashScreen } from '../../components/splashScreen'
+import { useTaskStore } from '../../stores/useTaskStore'
+import { useCategoryStore } from '../../stores/useCategoryStore'
 
 type OnboardingProps = {
   splashScreen: number
@@ -47,7 +47,7 @@ export function OnboardingOne({
           <Text className="text-zinc-500 uppercase">SKIP</Text>
         </TouchableOpacity>
         <Image
-          source={require('../assets/images/onboardingOne.png')}
+          source={require('../../assets/images/onboardingOne.png')}
           className="mx-auto mt-8"
         />
         <OnboardingBars splashScreen={splashScreen} />
@@ -85,7 +85,7 @@ export function OnboardingTwo({
           <Text className="text-zinc-500 uppercase">SKIP</Text>
         </TouchableOpacity>
         <Image
-          source={require('../assets/images/onboardingTwo.png')}
+          source={require('../../assets/images/onboardingTwo.png')}
           className="mx-auto mt-8"
         />
         <OnboardingBars splashScreen={splashScreen} />
@@ -130,7 +130,7 @@ export function OnboardingThree({
           <Text className="text-zinc-500 uppercase">SKIP</Text>
         </TouchableOpacity>
         <Image
-          source={require('../assets/images/onboardingThree.png')}
+          source={require('../../assets/images/onboardingThree.png')}
           className="mx-auto mt-8"
         />
         <OnboardingBars splashScreen={splashScreen} />

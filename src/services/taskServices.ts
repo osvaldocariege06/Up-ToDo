@@ -23,6 +23,25 @@ export const fetchTasks = async (): Promise<TaskProps[]> => {
   return tasks
 }
 
+export const fetchTasksByUserEmail = async (
+  userEmail: string
+): Promise<TaskProps[]> => {
+  try {
+    const q = query(taskCollectionRef, where('userEmail', '==', userEmail))
+    const querySnapshot = await getDocs(q)
+
+    const tasks: TaskProps[] = []
+    for (const doc of querySnapshot.docs) {
+      tasks.push({ id: doc.id, ...doc.data() } as TaskProps)
+    }
+
+    return tasks
+  } catch (error) {
+    console.error('Failed to fetch tasks by user email:', error)
+    throw error
+  }
+}
+
 export const createTask = async (task: TaskProps) => {
   const taskWithStatus = { ...task, completed: false }
   const taskCollection = collection(db, 'tasks')

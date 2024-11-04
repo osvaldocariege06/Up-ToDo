@@ -7,7 +7,7 @@ import {
   SortDescIcon,
   User2Icon,
 } from 'lucide-react-native'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -20,9 +20,11 @@ import {
 import colors from 'tailwindcss/colors'
 import { TaskCard } from '../../../components/TaskCard'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { useAuthStore } from '@/src/stores/useAuthStore'
 
 export default function Home() {
-  const { tasks, filteredTasks, loading } = useTaskStore()
+  const { tasks, fetchTasksByUser, loading } = useTaskStore()
+  const { user } = useAuthStore()
 
   const [showTaskToday, setShowTaskToday] = useState(false)
   const [showTaskCompleted, setShowTaskCompleted] = useState(false)
@@ -31,6 +33,12 @@ export default function Home() {
 
   const taskToday = tasks.filter(task => task.completed === false)
   const taskCompleted = tasks.filter(task => task.completed === true)
+
+  useEffect(() => {
+    if (!user?.email) return
+    const current = fetchTasksByUser(user?.email)
+    console.log('current', current)
+  }, [fetchTasksByUser, user?.email])
 
   return (
     <SafeAreaView className="flex-1 bg-black">
@@ -60,7 +68,7 @@ export default function Home() {
             />
           </View>
 
-          {tasks.length !== 0 ? (
+          {tasks.length ? (
             <>
               {tasks.length > 0 ? (
                 <View className="flex-1  gap-4 p-6">
@@ -77,8 +85,10 @@ export default function Home() {
                       )}
                     </TouchableOpacity>
 
-                    {taskToday.length <= 0 ? (
-                      <ActivityIndicator />
+                    {!taskToday.length ? (
+                      <Text className="text-zinc-400 text-center text-sm">
+                        No Tasks
+                      </Text>
                     ) : (
                       <View
                         className={`flex-col gap-4 ${showTaskToday && 'hidden'}`}
@@ -95,13 +105,12 @@ export default function Home() {
                                 priority={task.priority}
                                 categoryId={task.categoryId}
                                 completed={task.completed}
+                                userEmail={task.userEmail}
                               />
                             ))}
                           </View>
                         ) : (
-                          <Text className="text-zinc-400 text-center text-sm">
-                            No Tasks
-                          </Text>
+                          <ActivityIndicator />
                         )}
                       </View>
                     )}
@@ -139,6 +148,7 @@ export default function Home() {
                                   priority={task.priority}
                                   categoryId={task.categoryId}
                                   completed={task.completed}
+                                  userEmail={task.userEmail}
                                 />
                               ))}
                             </View>
@@ -154,21 +164,21 @@ export default function Home() {
                 </View>
               ) : (
                 <View className="flex-1 justify-center items-center mt-20">
-                  <ListTodoIcon size={80} color={colors.zinc[400]} />
-                  <Text className="text-white text-xl mt-4">
-                    What do you want to do today?
-                  </Text>
-                  <Text className="text-zinc-400 mt-2">
-                    Tap + to add your tasks
+                  <ActivityIndicator size={20} />
+                  <Text className="text-xs text-center text-zinc-600 mt-6">
+                    Check your internet connection
                   </Text>
                 </View>
               )}
             </>
           ) : (
             <View className="flex-1 justify-center items-center mt-20">
-              <ActivityIndicator size={20} />
-              <Text className="text-xs text-center text-zinc-600 mt-6">
-                Check your internet connection
+              <ListTodoIcon size={80} color={colors.zinc[400]} />
+              <Text className="text-white text-xl mt-4">
+                What do you want to do today?
+              </Text>
+              <Text className="text-zinc-400 mt-2">
+                Tap + to add your tasks
               </Text>
             </View>
           )}

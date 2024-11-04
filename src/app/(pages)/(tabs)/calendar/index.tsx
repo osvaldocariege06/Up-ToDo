@@ -104,7 +104,7 @@ export default function Calendar() {
                     <View className="gap-3">
                       {taskToday.map(task => (
                         <TaskCard
-                          key={task.id}
+                          key={task.time}
                           id={task.id}
                           title={task.title}
                           description={task.description}
@@ -112,6 +112,7 @@ export default function Calendar() {
                           priority={task.priority}
                           categoryId={task.categoryId}
                           completed={task.completed}
+                          userEmail={task.userEmail}
                         />
                       ))}
                     </View>
@@ -135,7 +136,7 @@ export default function Calendar() {
                     <View className="gap-3">
                       {taskCompleted.map(task => (
                         <TaskCard
-                          key={task.id}
+                          key={task.time}
                           id={task.id}
                           title={task.title}
                           description={task.description}
@@ -143,6 +144,7 @@ export default function Calendar() {
                           priority={task.priority}
                           categoryId={task.categoryId}
                           completed={task.completed}
+                          userEmail={task.userEmail}
                         />
                       ))}
                     </View>
