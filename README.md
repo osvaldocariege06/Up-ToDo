@@ -47,6 +47,9 @@ Antes de começar 🏁, você precisa ter:
    ```bash
    git clone https://github.com/osvaldocariege06/Up-ToDo.git
    cd UpTodo
+   npm install
+   npx expo start
+
 
 ## 📺 Demonstração do App
 
